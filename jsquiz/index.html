@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JS Quiz (20 ta)</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+            display: grid;
+            place-items: center;
+            min-height: 100vh;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 680px;
+            background: #fff;
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
+        }
+
+        h1 {
+            margin: 0 0 14px;
+            font-size: 24px;
+        }
+
+        .meta {
+            color: #666;
+            margin-bottom: 14px;
+        }
+
+        .q {
+            font-size: 20px;
+            margin: 8px 0 14px;
+        }
+
+        .option {
+            display: block;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .option:hover {
+            background: #f9fbff;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 14px;
+        }
+
+        button {
+            border: none;
+            background: #1f6feb;
+            color: #fff;
+            padding: 10px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            background: #9db8eb;
+            cursor: not-allowed;
+        }
+
+        .result {
+            text-align: center;
+        }
+
+        .score {
+            font-size: 30px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card" id="app"></div>
+
+    <script>
+        const questions = [
+            { q: "JavaScript qaysi kompaniya tomonidan yaratilgan?", options: ["Microsoft", "Netscape", "Google", "Apple"], answer: 1 },
+            { q: "JavaScriptda string turi qaysi?", options: ['"Hello"', "123", "true", "null"], answer: 0 },
+            { q: "DOM nimani anglatadi?", options: ["Data Object Model", "Document Object Model", "Dynamic Output Method", "Digital Ordinance Map"], answer: 1 },
+            { q: "Qaysi operator tenglik va turini tekshiradi?", options: ["==", "=", "===", "!="], answer: 2 },
+            { q: "const bilan e'lon qilingan o'zgaruvchi...", options: ["Qayta e'lon qilinadi", "Qiymati o'zgarmaydi", "Faol emas", "Faqat number bo'ladi"], answer: 1 },
+            { q: "Array uzunligini qaysi property qaytaradi?", options: ["size", "count", "length", "items"], answer: 2 },
+            { q: "console.log() nima qiladi?", options: ["Alert chiqaradi", "Terminal/brauzer konsoliga yozadi", "Serverni ishga tushiradi", "Fayl yaratadi"], answer: 1 },
+            { q: "if sharti noto'g'ri bo'lsa, qaysi blok ishlaydi?", options: ["try", "catch", "else", "finally"], answer: 2 },
+            { q: "Function yaratishning to'g'ri yozilishi qaysi?", options: ["function myFn() {}", "func myFn() {}", "def myFn() {}", "create myFn() {}"], answer: 0 },
+            { q: "Qaysi metod array oxiriga element qo'shadi?", options: ["shift()", "push()", "pop()", "unshift()"], answer: 1 },
+            { q: "Qaysi metod array oxiridan element olib tashlaydi?", options: ["pop()", "slice()", "map()", "join()"], answer: 0 },
+            { q: "Number('12') natijasi nima?", options: ["'12'", "12", "NaN", "true"], answer: 1 },
+            { q: "NaN nimani bildiradi?", options: ["No any Number", "Not a Number", "Null and Number", "New a Number"], answer: 1 },
+            { q: "Qaysi biri loop emas?", options: ["for", "while", "foreach", "if"], answer: 3 },
+            { q: "Template literal qaysi belgi bilan yoziladi?", options: ["' '", '" "', "` `", "( )"], answer: 2 },
+            { q: "localStorage ma'lumotni qachongacha saqlaydi?", options: ["Tab yopilgunga qadar", "Brauzer yopilgunga qadar", "O'chirilmaguncha", "1 minut"], answer: 2 },
+            { q: "sessionStorage ma'lumotni qachongacha saqlaydi?", options: ["Doimiy", "Tab sessiyasi tugaguncha", "1 kun", "Server restartgacha"], answer: 1 },
+            { q: "addEventListener nima uchun ishlatiladi?", options: ["Style berish", "Event ushlash", "API chaqirish", "Array sort qilish"], answer: 1 },
+            { q: "JSON.parse() nima qiladi?", options: ["Objectni string qiladi", "Stringni objectga aylantiradi", "Objectni o'chiradi", "JSON yuboradi"], answer: 1 },
+            { q: "Qaysi qiymat falsy?", options: ["'0'", "[]", "0", "{}"], answer: 2 }
+        ];
+
+        let current = 0;
+        let score = 0;
+        let selected = null;
+        const app = document.getElementById("app");
+
+        function renderQuestion() {
+            const item = questions[current];
+            selected = null;
+            app.innerHTML = `
+        <h1>JavaScript Quiz</h1>
+        <div class="meta">${current + 1} / ${questions.length}</div>
+        <div class="q">${item.q}</div>
+        <div id="opts">
+          ${item.options.map((opt, i) => `
+            <label class="option">
+              <input type="radio" name="opt" value="${i}" />
+              ${opt}
+            </label>
+          `).join("")}
+        </div>
+        <div class="actions">
+          <button id="nextBtn" disabled>${current === questions.length - 1 ? "Finish" : "Next"}</button>
+        </div>
+      `;
+
+            app.querySelectorAll('input[name="opt"]').forEach(input => {
+                input.addEventListener("change", (e) => {
+                    selected = Number(e.target.value);
+                    document.getElementById("nextBtn").disabled = false;
+                });
+            });
+
+            document.getElementById("nextBtn").addEventListener("click", () => {
+                if (selected === questions[current].answer) score++;
+                current++;
+                if (current < questions.length) renderQuestion();
+                else renderResult();
+            });
+        }
+
+        function renderResult() {
+            const percent = Math.round((score / questions.length) * 100);
+            app.innerHTML = `
+        <div class="result">
+          <h1>Natija</h1>
+          <div class="score">${score} / ${questions.length}</div>
+          <p>Foiz: <strong>${percent}%</strong></p>
+          <button id="restart">Qayta Boshlash</button>
+        </div>
+      `;
+            document.getElementById("restart").addEventListener("click", () => {
+                current = 0;
+                score = 0;
+                renderQuestion();
+            });
+        }
+
+        renderQuestion();
+    </script>
+</body>
+
+</html>
