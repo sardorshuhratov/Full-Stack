@@ -148,7 +148,7 @@
 // console.log(Boolean(10 > 9)); // true
 // console.log(Boolean(5 === 5)); // true
 
-// Practice
+// // Practice
 // // 1.
 // let yosh = 20;
 // if (yosh >= 18) {
